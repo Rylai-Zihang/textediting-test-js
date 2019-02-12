@@ -1,0 +1,14 @@
+{
+  "name": "root",
+  "private": true,
+  "scripts": {
+    "lint": "tslint '**/*.{ts,tsx}'"
+  },
+  "devDependencies": {
+    "@types/node": "^11.9.0",
+    "lerna": "^3.11.1",
+    "typescript": "^3.3.3",
+    "tslint": "^5.12.1",
+    "tslint-config-airbnb": "^5.11.1"
+  }
+}

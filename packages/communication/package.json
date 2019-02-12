@@ -1,0 +1,12 @@
+{
+  "name": "communication",
+  "version": "0.0.0",
+  "description": "> TODO: description",
+  "author": "Vladyslav Rudkivskyi <v.rudkovskiy@gmail.com>",
+  "homepage": "",
+  "license": "ISC",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: run tests from root\" && exit 1"
+  }
+}
