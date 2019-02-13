@@ -1,12 +1,13 @@
 module.exports = {
   "roots": [
-    "<rootDir>/packages/client/src",
-    "<rootDir>/packages/server/src",
-    "<rootDir>/packages/communication/src",
-    "<rootDir>/packages/diff-calculator/src"
+    "<rootDir>/packages/client",
+    "<rootDir>/packages/server",
+    "<rootDir>/packages/communication",
+    "<rootDir>/packages/diff-calculator"
   ],
   "transform": {
-    "^.+\\.tsx?$": "ts-jest"
+    "^.+\\.tsx?$": "ts-jest",
+    "^.+\\.ts?$": "ts-jest"
   },
   "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.tsx?$",
   "moduleFileExtensions": [

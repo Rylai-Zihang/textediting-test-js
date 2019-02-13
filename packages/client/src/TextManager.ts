@@ -25,7 +25,7 @@ export class TextManager {
   }
 
   private onTextChanged(newText: string): void {
-    const diff: TextDiff = TextDiff.calculate(this.text, newText);
+    const diff: TextDiff = this.diffCalculator.calculate(this.text, newText);
 
     // // TODO: Do not update text before response received.
     this.text = newText;
@@ -38,7 +38,7 @@ export class TextManager {
   private onReceivedTextUpdate(message: any): void {
     try {
       const diff: TextDiff = TextDiff.parse(message);
-      this.text = diff.apply(this.text);
+      this.text = this.diffCalculator.apply(this.text, diff);
     } catch (e) {
       console.error(`Failed to apply diff received from server.
         Error: ${e.message}

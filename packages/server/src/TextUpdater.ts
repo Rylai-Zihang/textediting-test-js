@@ -1,11 +1,12 @@
 import { WebServer, WebClient, TextEntry } from 'communication';
 import { TextRepository } from './TextRepository';
-import { TextDiff } from 'diff-calculator';
+import { TextDiff, TextDiffCalculator } from 'diff-calculator';
 
 export class TextUpdater {
 
   private currentText: TextEntry;
   private connections: WebClient[] = [];
+  private diffCalculator: TextDiffCalculator = new TextDiffCalculator();
 
   public constructor(private server: WebServer, private textRepository: TextRepository) {
   }
@@ -39,7 +40,7 @@ export class TextUpdater {
   private onAcceptedConnection(connection: WebClient): void {
     this.connections.push(connection);
 
-    const diff: TextDiff = TextDiff.calculate('', this.currentText.text);
+    const diff: TextDiff = this.diffCalculator.calculate('', this.currentText.text);
 
     connection.send(diff.toString())
         .catch((error: Error) => {
@@ -50,7 +51,7 @@ export class TextUpdater {
   private onReceivedTextUpdate(message: any, from: WebClient): void {
     try {
       const diff: TextDiff = TextDiff.parse(message);
-      this.currentText.text = diff.apply(this.currentText.text);
+      this.currentText.text = this.diffCalculator.apply(this.currentText.text, diff);
     } catch (e) {
       console.error(`Failed to apply diff received from server.
         Error: ${e.message}

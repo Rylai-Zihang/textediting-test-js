@@ -1,62 +1,44 @@
-import { TextDiffAddEntry } from './TextDiffAddEntry';
-import { TextDiffRemoveEntry } from './TextDiffRemoveEntry';
 import { TextDiff } from './TextDiff';
 
-import { Diff, Change, createPatch } from 'diff';
+import { createPatch, applyPatch } from 'diff';
 
-enum ChangeType { Added, Removed }
+export type CreatePatchFunc = (fileName: string, oldStr: string, newStr: string) => string;
+export type ApplyPatchFunc = (str: string, patch: string) => string;
 
 export class TextDiffCalculator {
 
-  // public calculate(currentText: string, newText: string): TextDiff {
-  //   const diff = new Diff();
-  //   const changes: Change[] = diff.diff(currentText, newText);
+  /**
+   * TextDiffCalculator uses 'diff' module by default to create/apply patches for 2 strings,
+   * however it allows to inject different implementations, so it can be tested by unit tests.
+   *
+   * @param createPatchFunc Creates diff between 2 strings
+   * @param applyPatchFunc Applies diff as a patch to a string
+   */
+  public constructor(
+    private createPatchFunc: CreatePatchFunc = createPatch,
+    private applyPatchFunc: ApplyPatchFunc = applyPatch,
+  ) {
+  }
 
-  //   const added: TextDiffAddEntry[] = this.extractAddChanges(changes);
-  //   const removed: TextDiffRemoveEntry[] = this.extractRemoveChanges(changes);
-  //   return new TextDiff(added, removed);
-  // }
+  public calculate(oldText: string, newText: string): TextDiff {
+    this.assertParam(oldText, 'oldText');
+    this.assertParam(newText, 'newText');
 
-  // public apply(text: string, diff: TextDiff): string {
-  //   return '';
-  // }
+    const patch: string = this.createPatchFunc('text', oldText, newText);
+    return new TextDiff(patch);
+  }
 
-  // private extractAddChanges(changes: Change[]): TextDiffAddEntry[] {
-  //   const entries: TextDiffAddEntry[] = [];
+  public apply(text: string, diff: TextDiff): string {
+    this.assertParam(text, 'text');
+    this.assertParam(diff, 'diff');
 
-  //   this.iterateChanges(changes, ChangeType.Added, (index: number, value: string) => {
-  //     const entry: TextDiffAddEntry = new TextDiffAddEntry(index, value);
-  //     entries.push(entry);
-  //   });
+    return this.applyPatchFunc(text, diff.getPatch());
+  }
 
-  //   return entries;
-  // }
-
-  // private extractRemoveChanges(changes: Change[]): TextDiffRemoveEntry[] {
-  //   const entries: TextDiffRemoveEntry[] = [];
-
-  //   this.iterateChanges(changes, ChangeType.Removed, (index: number, value: string) => {
-  //     const entry: TextDiffRemoveEntry = new TextDiffRemoveEntry(index, value.length);
-  //     entries.push(entry);
-  //   });
-
-  //   return entries;
-  // }
-
-  // private iterateChanges(changes: Change[],
-  //                        type: ChangeType,
-  //                        nextEntryFunc: (index: number, value: string) => void): void {
-  //   let index = 0;
-  //   for (const change of changes) {
-  //     let skipToNext: boolean = (type === ChangeType.Added && !change.added);
-  //     skipToNext = skipToNext || (type === ChangeType.Removed && !change.removed);
-
-  //     if (skipToNext) {
-  //       index += change.count || 0;
-  //       continue;
-  //     }
-
-  //     nextEntryFunc(index, change.value);
-  //   }
-  // }
+  // TODO: Code duplication. Extract to some Util class
+  private assertParam(param: any, paramName: string) {
+    if (param === null || param === undefined) {
+      throw new Error(`${paramName} param has to be non-null and non-undefined`);
+    }
+  }
 }
