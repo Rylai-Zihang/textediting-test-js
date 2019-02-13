@@ -7,6 +7,7 @@
   "license": "ISC",
   "main": "dist/app.js",
   "scripts": {
+    "tslint": "tslint --project ./tsconfig.json",
     "test": "echo \"Error: run tests from root\" && exit 1",
     "build": "webpack --watch --display-error-details",
     "clean-build": "rm -f ./dist/app.js && npm run build"
