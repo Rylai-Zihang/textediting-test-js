@@ -7,7 +7,7 @@
   "license": "ISC",
   "main": "dist/app.js",
   "scripts": {
-    "tslint": "tslint --project ./tsconfig.json",
+    "tslint": "tslint --fix --project ./tsconfig.json",
     "tsc": "tsc",
     "clean": "rm -f ./dist/app.js && rm -f ./dist/app.js.map",
     "run-dev": "npm run clean && ./node_modules/ts-node-dev/bin/ts-node-dev  --respawn --transpileOnly ./src/app.ts",
