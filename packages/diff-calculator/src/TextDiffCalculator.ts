@@ -2,57 +2,61 @@ import { TextDiffAddEntry } from './TextDiffAddEntry';
 import { TextDiffRemoveEntry } from './TextDiffRemoveEntry';
 import { TextDiff } from './TextDiff';
 
-import { Diff, Change } from 'diff';
+import { Diff, Change, createPatch } from 'diff';
 
 enum ChangeType { Added, Removed }
 
 export class TextDiffCalculator {
 
-  public calculate(text: string, newText: string): TextDiff {
-    const diff = new Diff();
-    const changes: Change[] = diff.diff(text, newText);
+  // public calculate(currentText: string, newText: string): TextDiff {
+  //   const diff = new Diff();
+  //   const changes: Change[] = diff.diff(currentText, newText);
 
-    const added: TextDiffAddEntry[] = this.extractAddChanges(changes);
-    const removed: TextDiffRemoveEntry[] = this.extractRemoveChanges(changes);
-    return new TextDiff(added, removed);
-  }
+  //   const added: TextDiffAddEntry[] = this.extractAddChanges(changes);
+  //   const removed: TextDiffRemoveEntry[] = this.extractRemoveChanges(changes);
+  //   return new TextDiff(added, removed);
+  // }
 
-  private extractAddChanges(changes: Change[]): TextDiffAddEntry[] {
-    const entries: TextDiffAddEntry[] = [];
+  // public apply(text: string, diff: TextDiff): string {
+  //   return '';
+  // }
 
-    this.iterateChanges(changes, ChangeType.Added, (index: number, value: string) => {
-      const entry: TextDiffAddEntry = new TextDiffAddEntry(index, value);
-      entries.push(entry);
-    });
+  // private extractAddChanges(changes: Change[]): TextDiffAddEntry[] {
+  //   const entries: TextDiffAddEntry[] = [];
 
-    return entries;
-  }
+  //   this.iterateChanges(changes, ChangeType.Added, (index: number, value: string) => {
+  //     const entry: TextDiffAddEntry = new TextDiffAddEntry(index, value);
+  //     entries.push(entry);
+  //   });
 
-  private extractRemoveChanges(changes: Change[]): TextDiffRemoveEntry[] {
-    const entries: TextDiffRemoveEntry[] = [];
+  //   return entries;
+  // }
 
-    this.iterateChanges(changes, ChangeType.Removed, (index: number, value: string) => {
-      const entry: TextDiffRemoveEntry = new TextDiffRemoveEntry(index, value.length);
-      entries.push(entry);
-    });
+  // private extractRemoveChanges(changes: Change[]): TextDiffRemoveEntry[] {
+  //   const entries: TextDiffRemoveEntry[] = [];
 
-    return entries;
-  }
+  //   this.iterateChanges(changes, ChangeType.Removed, (index: number, value: string) => {
+  //     const entry: TextDiffRemoveEntry = new TextDiffRemoveEntry(index, value.length);
+  //     entries.push(entry);
+  //   });
 
-  private iterateChanges(changes: Change[],
-                         type: ChangeType,
-                         nextEntryFunc: (index: number, value: string) => void): void {
-    let index = 0;
-    for (const change of changes) {
-      let skipToNext: boolean = (type === ChangeType.Added && !change.added);
-      skipToNext = skipToNext || (type === ChangeType.Removed && !change.removed);
+  //   return entries;
+  // }
 
-      if (skipToNext) {
-        index += change.count || 0;
-        continue;
-      }
+  // private iterateChanges(changes: Change[],
+  //                        type: ChangeType,
+  //                        nextEntryFunc: (index: number, value: string) => void): void {
+  //   let index = 0;
+  //   for (const change of changes) {
+  //     let skipToNext: boolean = (type === ChangeType.Added && !change.added);
+  //     skipToNext = skipToNext || (type === ChangeType.Removed && !change.removed);
 
-      nextEntryFunc(index, change.value);
-    }
-  }
+  //     if (skipToNext) {
+  //       index += change.count || 0;
+  //       continue;
+  //     }
+
+  //     nextEntryFunc(index, change.value);
+  //   }
+  // }
 }

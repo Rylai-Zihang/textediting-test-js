@@ -5,8 +5,9 @@
   "author": "Vladyslav Rudkivskyi <v.rudkovskiy@gmail.com>",
   "homepage": "",
   "license": "ISC",
-  "main": "index.ts",
+  "main": "dist/index.js",
   "scripts": {
+    "tsc": "tsc",
     "test": "echo \"Error: run tests from root\" && exit 1"
   },
   "devDependencies": {

@@ -30,7 +30,16 @@ coverage/
 .nyc_output/
 .eslintcache
 
-# Temp files
+# Build files
 packages/server/data/
 packages/client/dist/**/*.ts
 packages/client/dist/**/*.js
+packages/communication/dist/**/*.ts
+packages/communication/dist/**/*.js
+packages/communication/dist/**/*.js.map
+packages/diff-calculator/dist/**/*.ts
+packages/diff-calculator/dist/**/*.js
+packages/diff-calculator/dist/**/*.js.map
+packages/server/dist/**/*.ts
+packages/server/dist/**/*.js
+packages/server/dist/**/*.js.map

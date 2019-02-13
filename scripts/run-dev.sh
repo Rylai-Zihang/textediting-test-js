@@ -25,6 +25,9 @@ fi
 
 mongod --dbpath $DB_DIR || fail "Failed to launch DB server" &
 
+lerna bootstrap
+lerna run tsc
+
 cd $CLIENT_DIR
 npm run clean-build || fail "Failed to clean Client" &
 

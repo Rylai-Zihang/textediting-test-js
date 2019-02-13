@@ -2,13 +2,14 @@
 import { TextDiffCalculator } from 'diff-calculator';
 import { TextManager } from './TextManager';
 import { TextView } from './TextView';
-import { TextWebStoreClient } from 'communication';
+import { WebClient } from 'communication';
 
 // TODO: Handle errors on initialization.
 const diffCalculator = new TextDiffCalculator();
 const view = new TextView();
+let textManager = null;
 
-TextWebStoreClient.connect(`${window.location.hostname}:3000`)
-  .then((storeClient) => {
-    const textManager = new TextManager(view, storeClient, diffCalculator);
+WebClient.connect(window.location.hostname, 3000)
+  .then((connection) => {
+    textManager = new TextManager(view, connection, diffCalculator);
   });
