@@ -101,7 +101,7 @@ describe('calculate', () => {
     calculator.calculate(oldStr, newStr);
 
     expect(mockCreateFunction)
-      .toBeCalledWith(expect.any(String), oldStr, newStr);
+      .toBeCalledWith(expect.any(String), oldStr + '_toFail', newStr);
   });
 
   it('should return "diff" module`s "createPatch" function result wrapped by TextDiff', () => {
