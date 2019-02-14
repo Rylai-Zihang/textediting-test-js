@@ -16,6 +16,7 @@ In case you have an error connected to MongoDB - just rerun the script.
 Run:
 
 mongod --dbpath /packages/server/data
+
 lerna run tsc
 
 Open Project in VS Code(haven't tried other IDE) with following configuration:
