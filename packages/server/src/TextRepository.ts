@@ -25,7 +25,7 @@ export class TextRepository {
           return null;
         }
 
-        return new TextEntry(collection[0].id, collection[0].text);
+        return new TextEntry(collection[0].id, collection[0].text || '');
       });
   }
 

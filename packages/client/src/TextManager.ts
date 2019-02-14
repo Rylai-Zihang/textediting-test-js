@@ -1,52 +1,41 @@
-import { TextDiffCalculator, TextDiff } from 'diff-calculator';
-import { WebClient, TextEntry } from 'communication';
 import { TextView } from './TextView';
+import { WebWorkerMessage, Action } from './WebWorkerMessage';
+import { WebWorkerClient } from './WebWorkerClient';
 
 export class TextManager {
-  private text: string = '';
-  private diffCalculator: TextDiffCalculator;
-  private connection: WebClient;
   private view: TextView;
+  private client: WebWorkerClient = new WebWorkerClient();
 
   public constructor(view: TextView,
-                     connection: WebClient,
-                     diffCalculator: TextDiffCalculator) {
-    this.diffCalculator = diffCalculator;
-    this.connection = connection;
+                     host: string,
+                     port: number) {
     this.view = view;
 
     view.subscribeOnTextChangeEvent((text: string) => {
       this.onTextChanged(text);
     });
 
-    connection.onReceivedMessage((message: any) => {
-      this.onReceivedTextUpdate(message);
-    });
+    this.client.init('updateTextWorker.js', '')
+      .then(() => {
+
+        this.client.subscribe((text: string) => {
+          // TODO: Do not erase current text on view, but raise an error and disable sending diff.
+          //       User have to reload page
+          this.view.setText(text);
+        });
+
+        const connectMessage: WebWorkerMessage = WebWorkerMessage.createConnectMessage(host, port);
+        return this.client.postMessage(connectMessage, Action.ConnectResponse);
+      })
+      .catch(() => {
+        console.error('Failed to start web worker');
+      });
   }
 
   private onTextChanged(newText: string): void {
-    const diff: TextDiff = this.diffCalculator.calculate(this.text, newText);
-
-    // // TODO: Do not update text before response received.
-    this.text = newText;
-
-    // // TODO: Fail if text version is old one. Discard diff and disable sending.
-    const diffStr: string = JSON.stringify(diff);
-    this.connection.send(diffStr);
-  }
-
-  private onReceivedTextUpdate(message: any): void {
-    try {
-      const diff: TextDiff = TextDiff.parse(message);
-      this.text = this.diffCalculator.apply(this.text, diff);
-    } catch (e) {
-      console.error(`Failed to apply diff received from server.
-        Error: ${e.message}
-        Diff: ${message}`);
-    }
-
-    // // TODO: Do not erase current text on view, but raise an error and disable sending diff.
-    // //       User have to reload page
-    this.view.setText(this.text);
+    this.client.updateText(newText)
+      .catch(() => {
+        console.error('Failed to send text update');
+      });
   }
 }
