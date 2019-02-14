@@ -21,6 +21,7 @@ lerna run tsc
 
 Open Project in VS Code(haven't tried other IDE) with following configuration:
 
+```
 // launch.json
 {
   // Use IntelliSense to learn about possible attributes.
@@ -40,6 +41,7 @@ Open Project in VS Code(haven't tried other IDE) with following configuration:
     }
   ]
 }
+```
 
 
 # Known issues
