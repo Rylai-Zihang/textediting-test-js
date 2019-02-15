@@ -1,3 +1,5 @@
+Depending on when you look at this test task checkout other branches, I will add some improvements when I have time.
+
 # Project setup
 
 Run './scripts/setup-project-dependencies.sh' script.
