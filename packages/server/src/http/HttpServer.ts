@@ -1,4 +1,5 @@
 import { WebSocketServer } from 'communication';
+import { ClientApplication } from './ClientApplication';
 
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
@@ -25,16 +26,13 @@ export class HttpServer {
     this.port = port;
   }
 
-  public hostClientApplication(
-      listenedUri: string,
-      appDirectory: string,
-      appEntryPoint: string): void {
+  public hostClientApplication(listenedUri: string, app: ClientApplication): void {
 
-    this.expressApp.use(express.static(appDirectory));
-    this.expressApp.set('views', appDirectory);
+    this.expressApp.use(express.static(app.getClientAppDirectory()));
+    this.expressApp.set('views', app.getClientAppDirectory());
 
     this.expressApp.get(listenedUri, (req: Request, res: Response) => {
-      res.render(appEntryPoint);
+      res.render(app.getClientAppEntryPointName());
     });
   }
 

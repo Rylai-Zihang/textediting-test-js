@@ -1,16 +1,12 @@
 import { HttpServer } from './http/HttpServer';
 import { WebSocketServer } from 'communication';
 import { TextBroadcaster } from './text-broadcasting/TextBroadcaster';
+import { TextBroadcastingClientApp } from './text-broadcasting/TextBroadcastingClientApp';
 import { TextRepository } from './text-broadcasting/TextRepository';
 import { Database } from './storage/Database';
 
-import * as path from 'path';
-
 const LISTENED_HOST = 'localhost';
 const LISTENED_PORT = 3000;
-
-const CHAT_CLIENT_DIR = path.join(__dirname, '../node_modules/client/dist');
-const CHAT_CLIENT_ENTRY_POINT = 'app.html';
 
 // Should be aligned with settings in build scripts
 const DATABASE_HOST = 'localhost';
@@ -30,7 +26,7 @@ export class Application {
   private doRun(database: Database): Promise<void> {
     const httpServer = new HttpServer(LISTENED_HOST, LISTENED_PORT);
 
-    httpServer.hostClientApplication('/chat', CHAT_CLIENT_DIR, CHAT_CLIENT_ENTRY_POINT);
+    httpServer.hostClientApplication('/chat', new TextBroadcastingClientApp());
 
     const webSocketServer: WebSocketServer = httpServer.listenTcpConnectionRequest();
 
