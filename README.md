@@ -8,6 +8,7 @@ MongoDB should be installed globally
 # Build and run web application
 
 Run './scripts/run-dev.sh'
+
 Open http://localhost:3000/chat in browser
 
 There is a tricky issue with this script - it builds(runs) different components in separate processes, proper termination was not setup, so MongoDB is not closed after script execution was stopped.
