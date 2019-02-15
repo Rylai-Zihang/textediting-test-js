@@ -13,7 +13,7 @@ import WebSocket = require('ws');
  * However native socket is used for WebClient, that's why 'any' is used in some
  * places to reduce type checking, these sockets are competible, so no problems on run time.
  */
-export class WebServer {
+export class WebSocketServer {
 
   private webSocketServer: WebSocket.Server;
   private connections: WebClient[] = [];

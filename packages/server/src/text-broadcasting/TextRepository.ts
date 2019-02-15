@@ -1,6 +1,6 @@
 
-import { Database } from './Database';
-import { TextEntry } from 'communication';
+import { Database } from '../storage/Database';
+import { TextEntry } from './TextEntry';
 
 export class TextRepository {
 
@@ -29,7 +29,7 @@ export class TextRepository {
       });
   }
 
-  public initText(): Promise<void> {
+  public initText(): Promise<TextEntry> {
     return this.getText()
       .then((text: TextEntry | null) => {
         if (text) {
@@ -40,7 +40,10 @@ export class TextRepository {
         return this.db.insertOne(
           TextRepository.DEFAULT_TEXT_ENTRY,
           TextRepository.TEXT_COLLECTION_NAME,
-        );
+        )
+          .then(() => {
+            return TextRepository.DEFAULT_TEXT_ENTRY;
+          });
       });
   }
 

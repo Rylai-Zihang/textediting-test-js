@@ -1,4 +1,4 @@
-import { DatabaseEntry } from './DatabaseEntry';
+import { DatabaseEntry } from '../storage/DatabaseEntry';
 
 export class TextEntry implements DatabaseEntry {
 

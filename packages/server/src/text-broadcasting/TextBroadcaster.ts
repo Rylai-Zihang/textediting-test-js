@@ -1,32 +1,39 @@
-import { WebServer, WebClient, TextEntry } from 'communication';
+import { WebSocketServer, WebClient } from 'communication';
 import { TextRepository } from './TextRepository';
 import { TextDiff, TextDiffCalculator } from 'diff-calculator';
+import { TextEntry } from './TextEntry';
 
-export class TextUpdater {
+export class TextBroadcaster {
 
-  private currentText: TextEntry;
-  private connections: WebClient[] = [];
   private diffCalculator: TextDiffCalculator = new TextDiffCalculator();
+  private textRepository: TextRepository;
+  private currentText: TextEntry;
 
-  public constructor(private server: WebServer, private textRepository: TextRepository) {
+  private server: WebSocketServer;
+  private connections: WebClient[] = [];
+
+  public constructor(textRepository: TextRepository) {
+    this.textRepository = textRepository;
   }
 
-  public init(): Promise<void> {
+  public initialize(): Promise<void> {
     return this.textRepository.getText()
       .then((text: TextEntry | null) => {
-        if (!text) {
-          return this.textRepository.initText()
-            .then(() => {
-              return this.init();
-            });
+        if (text) {
+          this.currentText = text;
+          return;
         }
 
-        this.currentText = text;
-        this.initNewConnectionListening();
+        return this.textRepository.initText()
+            .then((text: TextEntry) => {
+              this.currentText = text;
+            });
       });
   }
 
-  private initNewConnectionListening(): void {
+  public connectTo(server: WebSocketServer): void {
+    this.server = server;
+
     this.server.onConnectionAcquired((connection: WebClient): void => {
 
       this.onAcceptedConnection(connection);
