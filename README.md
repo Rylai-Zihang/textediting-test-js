@@ -1,6 +1,7 @@
 # Project setup
 
 Run './scripts/setup-project-dependencies.sh' script.
+
 MongoDB should be installed globally
 
 
