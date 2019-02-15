@@ -7,6 +7,7 @@ module.exports = {
   mode: 'development',
   entry: {
     app: './src/app.ts',
+    //app: './src/app.vue',
     updateTextWorker: './src/UpdateTextWorker.ts'
   },
   output: {
@@ -15,7 +16,14 @@ module.exports = {
   },
   module: {
     rules: [
-      { test: /\.ts$/, use: 'ts-loader' }
+      { 
+        test: /\.ts$/,
+        use: 'ts-loader' 
+      },
+      {
+        test: /\.vue$/,
+        loader: "vue"
+      }
     ]
   },
   plugins: [

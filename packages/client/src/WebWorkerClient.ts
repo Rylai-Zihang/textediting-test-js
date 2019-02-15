@@ -4,19 +4,25 @@ import { SharedArrayBufferUtils } from './SharedArrayBufferUtils';
 
 export class WebWorkerClient {
 
+  public static create(scriptName: string, initialText: string): Promise<WebWorkerClient> {
+    const client = new WebWorkerClient(scriptName, initialText);
+
+    return client.post(client.sharedBuffer, Action.WorkerReady)
+    .then(() => {
+      return client;
+    });
+  }
+
   private worker: Worker;
   private sharedBuffer: SharedArrayBuffer;
   private sharedArray: Uint16Array;
 
-  public init(scriptName: string, initialText: string): Promise<void> {
-
+  private constructor(scriptName: string, initialText: string) {
     this.sharedBuffer = new SharedArrayBuffer(3000000);
     this.sharedArray = new Uint16Array(this.sharedBuffer);
     SharedArrayBufferUtils.stringToArray(initialText, this.sharedArray);
 
     this.worker = new Worker(scriptName);
-
-    return this.post(this.sharedBuffer, Action.WorkerReady);
   }
 
   public postMessage(message: WebWorkerMessage, responseAction: Action): Promise<void> {
@@ -39,7 +45,7 @@ export class WebWorkerClient {
   public updateText(text: string): Promise<void> {
     SharedArrayBufferUtils.stringToArray(text, this.sharedArray);
 
-    const message = WebWorkerMessage.createOnTextChangedMessage();
+    const message = WebWorkerMessage.create(Action.OnTextChanged);
     return this.post(message, Action.OnTextChangedResponse);
   }
 

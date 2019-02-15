@@ -13,60 +13,23 @@ type ConnectData = { host: string, port: number };
 
 export class WebWorkerMessage {
 
-  public static createWorkerReadyMessage() {
-    const message = new WebWorkerMessage();
-    message.action = Action.WorkerReady;
-    return message;
-  }
-
-  public static createConnectMessage(host: string, port: number) {
-    const message = new WebWorkerMessage();
-    message.action = Action.Connect;
-    message.connectData = { host, port };
-    return message;
-  }
-
-  public static createConnectResponseMessage() {
-    const message = new WebWorkerMessage();
-    message.action = Action.ConnectResponse;
-    return message;
-  }
-
-  public static createOnTextChangedMessage() {
-    const message = new WebWorkerMessage();
-    message.action = Action.OnTextChanged;
-    return message;
-  }
-
-  public static createOnTextChangedResponseMessage() {
-    const message = new WebWorkerMessage();
-    message.action = Action.OnTextChangedResponse;
-    return message;
-  }
-
-  public static createOnTextReceivedMessage() {
-    const message = new WebWorkerMessage();
-    message.action = Action.OnTextReceived;
-    return message;
+  public static create(action: Action, connectData: ConnectData | null = null): WebWorkerMessage {
+    return new WebWorkerMessage(action, connectData);
   }
 
   public static parse(msg: string | Object): WebWorkerMessage {
     WebWorkerMessage.assertParam(msg, 'msg');
 
-    const message = new WebWorkerMessage();
-
     const messageJson = typeof msg === 'string' ? JSON.parse(msg) : msg;
 
     const action: Action = WebWorkerMessage.extractAction(messageJson);
-    message.action = action;
-
     switch (action) {
       case Action.Connect:
-        message.connectData = WebWorkerMessage.extractConnectData(messageJson);
-        break;
+        const connectData = WebWorkerMessage.extractConnectData(messageJson);
+        return new WebWorkerMessage(action, connectData);
     }
 
-    return message;
+    return new WebWorkerMessage(action);
   }
 
   // TODO: Code duplication. Extract to some Util class
@@ -90,14 +53,14 @@ export class WebWorkerMessage {
     return messageJson.connectData;
   }
 
-  private action: Action;
-  private connectData: ConnectData;
+  private constructor(private action: Action, private connectData: ConnectData | null = null) {
+  }
 
   public getAction(): Action {
     return this.action;
   }
 
-  public getConnectData(): ConnectData {
+  public getConnectData(): ConnectData | null {
     return this.connectData;
   }
 

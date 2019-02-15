@@ -7,9 +7,8 @@ export class TextBroadcaster {
 
   private diffCalculator: TextDiffCalculator = new TextDiffCalculator();
   private textRepository: TextRepository;
-  private currentText: TextEntry;
+  private currentText: TextEntry = new TextEntry(1, '');
 
-  private server: WebSocketServer;
   private connections: WebClient[] = [];
 
   public constructor(textRepository: TextRepository) {
@@ -32,9 +31,7 @@ export class TextBroadcaster {
   }
 
   public connectTo(server: WebSocketServer): void {
-    this.server = server;
-
-    this.server.onConnectionAcquired((connection: WebClient): void => {
+    server.onConnectionAcquired((connection: WebClient): void => {
 
       this.onAcceptedConnection(connection);
 

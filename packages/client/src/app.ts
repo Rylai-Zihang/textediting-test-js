@@ -4,4 +4,4 @@ import { TextView } from './TextView';
 
 // TODO: Handle errors on initialization.
 const view = new TextView();
-const textManager = new TextManager(view, window.location.hostname, 3000);
+TextManager.create(view, window.location.hostname, 3000);

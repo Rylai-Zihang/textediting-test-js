@@ -1,11 +1,7 @@
 import { WebClient } from './WebClient';
 
 import * as http from 'http';
-
-// Disabling TSLint rule for this line is needed to not allow IDE
-// to change import statment automatically.
-// tslint:disable-next-line: import-name
-import WebSocket = require('ws');
+import * as WebSocket from 'ws';
 
 /**
  * Web Socket Server is only available on Node JS(back-end) side

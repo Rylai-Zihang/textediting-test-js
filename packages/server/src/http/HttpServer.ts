@@ -13,7 +13,7 @@ export class HttpServer {
 
   private expressApp: Express;
   private httpServer: http.Server;
-  private tcpConnection: WebSocketServer = null;
+  private tcpConnection: WebSocketServer[] = [];
 
   private host: string;
   private port: number;
@@ -37,11 +37,11 @@ export class HttpServer {
   }
 
   public listenTcpConnectionRequest(): WebSocketServer {
-    if (!this.tcpConnection) {
-      this.tcpConnection = new WebSocketServer(this.httpServer);
+    if (this.tcpConnection.length === 0) {
+      this.tcpConnection.push(new WebSocketServer(this.httpServer));
     }
 
-    return this.tcpConnection;
+    return this.tcpConnection[0];
   }
 
   public run(): void {

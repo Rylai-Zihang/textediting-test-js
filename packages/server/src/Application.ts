@@ -14,8 +14,6 @@ const DATABASE_PORT = 27017;
 
 export class Application {
 
-  private textBroadcaster: TextBroadcaster;
-
   public run(): Promise<void> {
     return this.connectToDatabase(DATABASE_HOST, DATABASE_PORT)
       .then((database: Database) => {
@@ -31,11 +29,11 @@ export class Application {
     const webSocketServer: WebSocketServer = httpServer.listenTcpConnectionRequest();
 
     const textRepository = new TextRepository(database);
-    this.textBroadcaster = new TextBroadcaster(textRepository);
+    const textBroadcaster = new TextBroadcaster(textRepository);
 
-    return this.textBroadcaster.initialize()
+    return textBroadcaster.initialize()
       .then(() => {
-        this.textBroadcaster.connectTo(webSocketServer);
+        textBroadcaster.connectTo(webSocketServer);
 
         httpServer.run();
       });

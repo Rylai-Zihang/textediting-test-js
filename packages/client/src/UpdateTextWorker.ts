@@ -15,7 +15,7 @@ self.addEventListener('message', (event) => {
     sharedBuffer = data;
     textOnView = new Uint16Array(sharedBuffer);
 
-    const message = WebWorkerMessage.createWorkerReadyMessage();
+    const message = WebWorkerMessage.create(Action.WorkerReady);
     postMessage(message);
     return;
   }
@@ -24,14 +24,15 @@ self.addEventListener('message', (event) => {
 
   switch (message.getAction()) {
     case Action.Connect:
-      const host: string = message.getConnectData().host;
-      const port: number = message.getConnectData().port;
+      const data: { host: string, port:number } | null = message.getConnectData();
+      const host: string = data ? data.host : '';
+      const port: number = data ? data.port : 0;
 
       WebClient.connect(host, port)
         .then((webClient) => {
           connection = webClient;
 
-          const message = WebWorkerMessage.createConnectResponseMessage();
+          const message = WebWorkerMessage.create(Action.ConnectResponse);
           postMessage(message);
         })
         .then(() => {
@@ -66,7 +67,7 @@ function onReceivedTextUpdate(message: any): void {
       Diff: ${message}`);
   }
 
-  const msg = WebWorkerMessage.createOnTextReceivedMessage();
+  const msg = WebWorkerMessage.create(Action.OnTextReceived);
   postMessage(msg);
 }
 
