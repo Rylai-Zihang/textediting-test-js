@@ -1,4 +1,3 @@
-import { TextView } from './TextView';
 import { WebWorkerMessage, Action } from './WebWorkerMessage';
 import { WebWorkerClient } from './WebWorkerClient';
 

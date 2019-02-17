@@ -1,25 +1,26 @@
 <template>
-  <textarea class="input-field" v-model="text"  v-on:input="onTextChanged()"></textarea>
+  <div>
+    <textarea class="input-field" v-model="text"  @input="onTextChanged"></textarea>
+    <p v-text="textFromState"></p>
+  </div>
 </template>
 
 <script lang="ts">
+  import { MutationType } from './store/Store';
   import { Vue, Component, Prop } from "vue-property-decorator";
-  import { TextManager } from './TextManager';
 
   @Component
   export default class App extends Vue {
-    @Prop() text: string = '';
-    textManager!: TextManager;
 
-    async mounted() {
-      this.textManager = await TextManager.create(window.location.hostname, 3000);
-      this.textManager.subscribeToTextChanges((text: string) => {
-        this.text = text;
-      });
+    onTextChanged(event: Event) {
+      if (event && event.target) {
+        const targetElement = <HTMLTextAreaElement> event.target;
+        this.$store.commit(MutationType.UpdateTextOnInput, targetElement.value);
+      }
     }
 
-    onTextChanged() {
-      this.textManager.onTextChanged(this.text);
+    get text() {
+      return this.$store.state.text;
     }
   }
 </script>
