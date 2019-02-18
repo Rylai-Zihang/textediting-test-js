@@ -6,11 +6,12 @@
 </template>
 
 <script lang="ts">
-  import { MutationType } from './store/Store';
+  import { MutationType } from '../state/Store';
+
   import { Vue, Component, Prop } from "vue-property-decorator";
 
   @Component
-  export default class App extends Vue {
+  export default class RootComponent extends Vue {
 
     onTextChanged(event: Event) {
       if (event && event.target) {

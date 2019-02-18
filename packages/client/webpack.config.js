@@ -5,8 +5,8 @@ const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 module.exports = {
   entry: {
-    app: './src/main.ts',
-    updateTextWorker: './src/UpdateTextWorker.ts'
+    app: './src/index.ts',
+    updateTextWorker: './src/text-synchronization/UpdateTextWorker.ts'
   },
   output: {
     filename: '[name].js',

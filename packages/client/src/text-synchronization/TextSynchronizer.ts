@@ -3,18 +3,18 @@ import { WebWorkerClient } from './WebWorkerClient';
 
 type TextChangeCallback = (text: string) => void;
 
-export class TextManager {
+export class TextSynchronizer {
 
-  public static create(host: string, port: number): Promise<TextManager> {
+  public static create(host: string, port: number): Promise<TextSynchronizer> {
 
     return WebWorkerClient.create('updateTextWorker.js', '')
       .then((client: WebWorkerClient) => {
-        const textManager = new TextManager(client);
+        const synchronizer = new TextSynchronizer(client);
 
         const connectMessage: WebWorkerMessage = WebWorkerMessage.create(Action.Connect,
                                                                          { host, port });
         return client.postMessage(connectMessage, Action.ConnectResponse)
-          .then(() => textManager);
+          .then(() => synchronizer);
       });
   }
 

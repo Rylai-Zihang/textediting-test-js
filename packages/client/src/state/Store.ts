@@ -1,4 +1,4 @@
-import State from './State';
+import { State } from './State';
 
 import vue from 'vue';
 import vuex, { StoreOptions, MutationTree, ActionTree, Plugin } from 'vuex';
@@ -19,7 +19,7 @@ const mutations: MutationTree<State> = {
   },
 };
 
-export default class Store  extends vuex.Store<State> {
+export class Store  extends vuex.Store<State> {
 
   public constructor(plugins: Plugin<State>[] = []) {
 

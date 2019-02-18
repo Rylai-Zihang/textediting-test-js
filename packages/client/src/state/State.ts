@@ -1,3 +1,3 @@
-export default class State {
+export class State {
   public text: string = '';
 }

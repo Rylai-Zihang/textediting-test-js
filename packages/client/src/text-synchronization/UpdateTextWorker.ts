@@ -1,7 +1,7 @@
 import { TextDiffCalculator, TextDiff } from 'diff-calculator';
 import { WebWorkerMessage, Action } from './WebWorkerMessage';
 import { WebClient } from 'communication';
-import { SharedArrayBufferUtils } from './SharedArrayBufferUtils';
+import { SharedArrayBufferUtils } from '../utils/SharedArrayBufferUtils';
 
 let sharedBuffer: SharedArrayBuffer;
 let textOnView: Uint16Array;
