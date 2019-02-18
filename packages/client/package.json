@@ -5,11 +5,10 @@
   "author": "Vladyslav Rudkivskyi <v.rudkovskiy@gmail.com>",
   "homepage": "",
   "license": "ISC",
-  "main": "dist/app.js",
   "scripts": {
     "tslint": "tslint --fix --project ./tsconfig.json",
     "test": "echo \"Error: run tests from root\" && exit 1",
-    "build": "mkdir -p ./dist && cp ./src/index.html ./dist/app.html && webpack --watch --display-error-details",
+    "build": "mkdir -p ./dist && cp ./src/index.html ./dist/index.html && webpack --watch --display-error-details",
     "clean-build": "rm -rf ./dist && rm -rf ./built && npm run build"
   },
   "dependencies": {

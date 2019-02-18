@@ -5,7 +5,7 @@ const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 module.exports = {
   entry: {
-    app: './src/index.ts',
+    index: './src/index.ts',
     TextSynchronizerWorker: './src/text-synchronization/TextSynchronizerWorker.ts'
   },
   output: {
