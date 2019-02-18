@@ -1,6 +1,6 @@
 
 import { WebWorkerMessage, Action } from './WebWorkerMessage';
-import { SharedArrayBufferUtils } from './SharedArrayBufferUtils';
+import { SharedArrayBufferUtils } from '../utils/SharedArrayBufferUtils';
 
 export class WebWorkerClient {
 
