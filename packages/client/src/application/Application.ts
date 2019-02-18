@@ -9,21 +9,25 @@ import { State } from '../state/State';
 
 export class Application {
 
-  public initialize(rootElementSelector: string, synchronizer: TextSynchronizer) {
+  // TODO: Do not allow to enter more than "textMaxLength" symbols on view.
+  public constructor(private rootElementSelector: string, private textMaxLength: number) {
+  }
+
+  public initialize(synchronizer: TextSynchronizer) {
     const synchronizerPlugin: Plugin<State> = this.createTextSynchronizerPlugin(synchronizer);
-    this.initApp(rootElementSelector, synchronizerPlugin);
+    this.initApp(this.rootElementSelector, synchronizerPlugin);
   }
 
   private createTextSynchronizerPlugin(synchronizer: TextSynchronizer): Plugin<State> {
     return (store: Store) => {
 
-      synchronizer.subscribeToTextChanges((text:string) => {
+      synchronizer.subscribeToTextUpdatesFromServer((text:string) => {
         store.commit(MutationType.UpdateTextOnReceive, text);
       });
 
       store.subscribe((mutation: MutationPayload, state: State) => {
         if (mutation.type === MutationType.UpdateTextOnInput) {
-          synchronizer.onTextChanged(state.text);
+          synchronizer.onTextChangedOnClient(state.text);
         }
       });
     };
