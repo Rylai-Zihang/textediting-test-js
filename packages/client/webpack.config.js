@@ -4,9 +4,13 @@ const { VueLoaderPlugin } = require('vue-loader');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 module.exports = {
+  mode: 'development',
   entry: {
     index: './src/index.ts',
-    TextSynchronizerWorker: './src/text-synchronization/TextSynchronizerWorker.ts'
+    TextSynchronizerWorker: [
+      './libraries/atomics-wait-async/polyfill.js',
+      './src/text-synchronization/TextSynchronizerWorker.ts',
+    ]
   },
   output: {
     filename: '[name].js',

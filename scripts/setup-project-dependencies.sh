@@ -1,6 +1,8 @@
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 MONGODB_DATA_DIR=$SCRIPT_DIR/../packages/server/data
 
+git submodule update --init --recursive
+
 # Copy git hooks to .git folder
 ./scripts/install-hooks.sh
 

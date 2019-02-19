@@ -1,7 +1,6 @@
 <template>
   <div>
-    <textarea class="input-field" v-model="text"  @input="onTextChanged"></textarea>
-    <p v-text="textFromState"></p>
+    <textarea class="input-field" v-model="text"></textarea>
   </div>
 </template>
 
@@ -13,15 +12,12 @@
   @Component
   export default class RootComponent extends Vue {
 
-    onTextChanged(event: Event) {
-      if (event && event.target) {
-        const targetElement = <HTMLTextAreaElement> event.target;
-        this.$store.commit(MutationType.UpdateTextOnInput, targetElement.value);
-      }
-    }
-
     get text() {
       return this.$store.state.text;
+    }
+
+    set text(value: string) {
+      this.$store.commit(MutationType.UpdateTextOnInput, value);
     }
   }
 </script>

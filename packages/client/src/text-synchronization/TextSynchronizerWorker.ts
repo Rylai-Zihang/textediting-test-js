@@ -1,10 +1,9 @@
 import { TextDiffCalculator, TextDiff } from 'diff-calculator';
 import { WebWorkerMessage, Action } from './WebWorkerMessage';
 import { WebClient } from 'communication';
-import { SharedArrayBufferUtils } from '../utils/SharedArrayBufferUtils';
+import { SharedText } from '../utils/SharedText';
 
-let sharedBuffer: SharedArrayBuffer;
-let textOnView: Uint16Array;
+let textOnView: SharedText;
 let textOnServer: string;
 const diffCalculator = new TextDiffCalculator();
 let connection: WebClient;
@@ -12,8 +11,7 @@ let connection: WebClient;
 self.addEventListener('message', (event) => {
   const data = event.data;
   if (data instanceof SharedArrayBuffer) {
-    sharedBuffer = data;
-    textOnView = new Uint16Array(sharedBuffer);
+    textOnView = new SharedText(data);
 
     const message = WebWorkerMessage.create(Action.WorkerReady);
     postMessage(message);
@@ -42,7 +40,7 @@ self.addEventListener('message', (event) => {
         });
       break;
     case Action.OnTextChanged:
-      const currentText: string = SharedArrayBufferUtils.toString(textOnView);
+      const currentText: string = textOnView.getText();
       const diff: TextDiff = diffCalculator.calculate(textOnServer, currentText);
 
       // TODO: Fail if text version is old one. Discard diff and disable sending.
@@ -57,10 +55,10 @@ self.addEventListener('message', (event) => {
 function onReceivedTextUpdate(message: any): void {
   try {
     const diff: TextDiff = TextDiff.parse(message);
-    const currentText = SharedArrayBufferUtils.toString(textOnView);
+    const currentText = textOnView.getText();
     textOnServer = diffCalculator.apply(currentText, diff);
 
-    SharedArrayBufferUtils.stringToArray(textOnServer, textOnView);
+    textOnView.setText(textOnServer);
   } catch (e) {
     console.error(`Failed to apply diff received from server.
       Error: ${e.message}

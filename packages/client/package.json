@@ -8,7 +8,7 @@
   "scripts": {
     "tslint": "tslint --fix --project ./tsconfig.json",
     "test": "echo \"Error: run tests from root\" && exit 1",
-    "build": "mkdir -p ./dist && cp ./src/index.html ./dist/index.html && webpack --watch --display-error-details",
+    "build": "bash ./scripts/build.sh",
     "clean-build": "rm -rf ./dist && rm -rf ./built && npm run build"
   },
   "dependencies": {

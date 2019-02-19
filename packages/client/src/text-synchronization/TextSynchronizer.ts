@@ -1,5 +1,5 @@
 import { WebWorkerMessage, Action } from './WebWorkerMessage';
-import { SharedArrayBufferUtils } from '../utils/SharedArrayBufferUtils';
+import { SharedText } from '../utils/SharedText';
 
 const WORKER_SCRIPT_URI = 'TextSynchronizerWorker.js';
 const INITIAL_TEXT = '';
@@ -8,34 +8,38 @@ type TextChangeCallback = (text: string) => void;
 
 export class TextSynchronizer {
 
-  public static create(host: string,
-                       port: number,
-                       textMaxLength: number): Promise<TextSynchronizer> {
+  public static async create(host: string,
+                             port: number,
+                             textMaxLength: number): Promise<TextSynchronizer> {
 
-    const synchronizer = new TextSynchronizer(WORKER_SCRIPT_URI, INITIAL_TEXT, textMaxLength);
-    return synchronizer.setupConnectionWith(host, port)
-      .then(() => synchronizer);
+    const synchronizer = new TextSynchronizer(WORKER_SCRIPT_URI, textMaxLength);
+    await synchronizer.sharedText.setText(INITIAL_TEXT);
+    await synchronizer.setupConnectionWith(host, port);
+    return synchronizer;
   }
 
   private worker: Worker;
   private textChangeListeners: TextChangeCallback[] = [];
-  private sharedBuffer: SharedArrayBuffer;
-  private sharedArray: Uint16Array;
 
-  private constructor(scriptName: string, initialText: string, textMaxLength: number) {
+  // Using shared memory for passing string to WebWorker is useless,
+  // cause we still need to copy string to a buffer.
+  // However, it shows how to work with it in test task.
+  private sharedBuffer: SharedArrayBuffer;
+  private sharedText: SharedText;
+
+  private constructor(scriptName: string, textMaxLength: number) {
     this.worker = new Worker(scriptName);
 
     // TODO: Track text length and ignore symbols over this limit.
     this.sharedBuffer = new SharedArrayBuffer(textMaxLength);
-    this.sharedArray = new Uint16Array(this.sharedBuffer);
-    SharedArrayBufferUtils.stringToArray(initialText, this.sharedArray);
+    this.sharedText = new SharedText(this.sharedBuffer);
 
-    this.worker.addEventListener('message', (event) => {
+    this.worker.addEventListener('message', async (event) => {
       const data = event.data;
       const message = WebWorkerMessage.parse(data);
 
       if (message.getAction() === Action.OnTextReceived) {
-        const text = SharedArrayBufferUtils.toString(this.sharedArray);
+        const text = await this.sharedText.getTextAsync();
 
       // TODO: Do not erase current text on view, but raise an error and disable sending diff.
       //       User have to reload page
@@ -50,8 +54,8 @@ export class TextSynchronizer {
     this.textChangeListeners.push(callback);
   }
 
-  public onTextChangedOnClient(text: string): void {
-    SharedArrayBufferUtils.stringToArray(text, this.sharedArray);
+  public async onTextChangedOnClient(text: string): Promise<void> {
+    await this.sharedText.setTextAsync(text);
 
     const message = WebWorkerMessage.create(Action.OnTextChanged);
     this.post(message, Action.OnTextChangedResponse)
