@@ -1,4 +1,9 @@
-Depending on when you look at this test task checkout other branches, I will add some improvements when I have time.
+# Description
+
+Demo/test of parallel text editing in different browser windows.
+WebSockets are used to setup connection between clients and server.
+WebWorker is used to not freeze main thread while computing and sending text diff.
+SharedArrayBuffer is used to share memory(text) between threads. This demo is not a good example of using shared buffer, cause we still need to copy text to shared array. It is more suitable for sharing data netween more than 2 threads.
 
 # Project setup
 
