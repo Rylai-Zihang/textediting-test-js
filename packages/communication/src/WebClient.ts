@@ -11,7 +11,6 @@ export class WebClient {
     return new Promise((resolve, reject) => {
       const url = `${WebClient.WEBSOCKET_PROTOCOL}://${host}:${port}`;
       const connection = new WebSocket(url);
-
       const connectionTimeout = setTimeout(() => {
         connection.close();
         reject(new Error(`Could not connect to ${url}`));
@@ -58,8 +57,11 @@ export class WebClient {
     };
   }
 
-  // TODO: Implement ping-pong logic and shutdown connection if not passes
-  // public onConnectionLost(connectionCallback: (connection: WebClient) => void): void {
-
-  // }
+  // TODO: Implement ping-pong logic and shutdown connection
+  //       if connection with client was silently lot
+  public onConnectionLost(callback: () => void): void {
+    this.connection.onclose = (event: CloseEvent) => {
+      callback();
+    };
+  }
 }

@@ -32,12 +32,18 @@ export class TextBroadcaster {
 
   public connectTo(server: WebSocketServer): void {
     server.onConnectionAcquired((connection: WebClient): void => {
-
       this.onAcceptedConnection(connection);
 
       connection.onReceivedMessage((message) => {
         this.onReceivedTextUpdate(message, connection);
       });
+    });
+
+    server.onConnectionLost((connection: WebClient): void => {
+      const position = this.connections.indexOf(connection);
+      if (position !== -1) {
+        this.connections.splice(position, 1);
+      }
     });
   }
 
@@ -65,10 +71,13 @@ export class TextBroadcaster {
     this.textRepository.updateText(this.currentText)
       .then(() => {
         this.connections.forEach((connection: WebClient) => {
-          // TODO: Do not just resend message to all clients
-          if (connection !== from) {
-            connection.send(message);
+          if (connection === from) {
+            return;
           }
+          connection.send(message)
+            .catch((error: Error) => {
+              console.error(`Failed to send diff to a connected client: ${error.message}`);
+            });
         });
       })
       .catch((error: Error) => {
