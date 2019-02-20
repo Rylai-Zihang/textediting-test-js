@@ -1,5 +1,16 @@
-import { WebWorkerMessage, Action } from './WebWorkerMessage';
 import { SharedText } from '../utils/SharedText';
+import { WebWorkerCommunicationChannel } from './communication/WebWorkerCommunicationChannel';
+import {
+  Request,
+  Response,
+  WorkerReadyEvent,
+  WorkerReadyEventResponse,
+  SetupMemorySharingRequest,
+  ConnectToServerRequest,
+  TextReceivedEvent,
+  TextReceivedEventResponse,
+  TextInputEvent,
+} from './communication/requests';
 
 const WORKER_SCRIPT_URI = 'TextSynchronizerWorker.js';
 const INITIAL_TEXT = '';
@@ -11,41 +22,37 @@ export class TextSynchronizer {
   public static async create(host: string,
                              port: number,
                              textMaxLength: number): Promise<TextSynchronizer> {
+    const sharedBuffer = SharedText.createTextSharedBuffer(textMaxLength);
+    const sharedText = new SharedText(sharedBuffer);
+    await sharedText.setTextAsync(INITIAL_TEXT);
 
-    const synchronizer = new TextSynchronizer(WORKER_SCRIPT_URI, textMaxLength);
-    await synchronizer.sharedText.setText(INITIAL_TEXT);
-    await synchronizer.setupConnectionWith(host, port);
-    return synchronizer;
+    const worker = new Worker(WORKER_SCRIPT_URI);
+    const workerChannel = new WebWorkerCommunicationChannel(worker);
+
+    return new TextSynchronizer(host, port, workerChannel, sharedBuffer, sharedText);
   }
 
-  private worker: Worker;
   private textChangeListeners: TextChangeCallback[] = [];
 
   // Using shared memory for passing string to WebWorker is useless,
   // cause we still need to copy string to a buffer.
   // However, it shows how to work with it in test task.
-  private sharedBuffer: SharedArrayBuffer;
-  private sharedText: SharedText;
+  private constructor(private host: string,
+                      private port: number,
+                      private workerChannel: WebWorkerCommunicationChannel,
+                      private sharedBuffer: SharedArrayBuffer,
+                      private sharedText: SharedText) {
+    this.workerChannel.listen((request: Request<any>): Promise<Response> => {
+      switch (request.getType()) {
 
-  private constructor(scriptName: string, textMaxLength: number) {
-    this.worker = new Worker(scriptName);
+        case WorkerReadyEvent.getType():
+          return this.handleWorkerReadyEvent(request);
 
-    // TODO: Track text length and ignore symbols over this limit.
-    this.sharedBuffer = new SharedArrayBuffer(textMaxLength);
-    this.sharedText = new SharedText(this.sharedBuffer);
+        case TextReceivedEvent.getType():
+          return this.handleTextReceivedEvent(request);
 
-    this.worker.addEventListener('message', async (event) => {
-      const data = event.data;
-      const message = WebWorkerMessage.parse(data);
-
-      if (message.getAction() === Action.OnTextReceived) {
-        const text = await this.sharedText.getTextAsync();
-
-      // TODO: Do not erase current text on view, but raise an error and disable sending diff.
-      //       User have to reload page
-        this.textChangeListeners.forEach((callback: TextChangeCallback) => {
-          callback(text);
-        });
+        default:
+          throw new Error(`Unknown request type "${request.getType()}"`);
       }
     });
   }
@@ -57,51 +64,34 @@ export class TextSynchronizer {
   public async onTextChangedOnClient(text: string): Promise<void> {
     await this.sharedText.setTextAsync(text);
 
-    const message = WebWorkerMessage.create(Action.OnTextChanged);
-    this.post(message, Action.OnTextChangedResponse)
+    const textInputEvent = new TextInputEvent();
+    this.workerChannel.send(textInputEvent)
       .catch(() => {
         console.error('Failed to send text update');
       });
   }
 
-  private setupConnectionWith(host: string, port: number): Promise<void> {
-    return this.post(this.sharedBuffer, Action.WorkerReady)
-      .then(() => {
-        const connectMessage: WebWorkerMessage = WebWorkerMessage.create(
-          Action.Connect, { host, port },
-        );
-        this.post(connectMessage, Action.ConnectResponse);
-      });
+  private async handleWorkerReadyEvent(request: WorkerReadyEvent)
+        : Promise<WorkerReadyEventResponse> {
+    const shareMemoryRequest = new SetupMemorySharingRequest(this.sharedBuffer);
+    await this.workerChannel.send(shareMemoryRequest);
+
+    const connectRequest = new ConnectToServerRequest(this.host, this.port);
+    await this.workerChannel.send(connectRequest);
+
+    return request.createSuccessResponse();
   }
 
-  private post(message: any, responseAction: Action): Promise <void> {
-    return new Promise<void>((resolve, reject) => {
-      this.worker.postMessage(message);
+  private async handleTextReceivedEvent(request: TextReceivedEvent)
+        : Promise<TextReceivedEventResponse> {
+    const text = await this.sharedText.getTextAsync();
 
-      const onMessageCallback = (event: any) => {
-        this.worker.removeEventListener('message', onMessageCallback);
-        this.worker.removeEventListener('error', onErrorCallback);
-
-        const data = event.data;
-        const message = WebWorkerMessage.parse(data);
-
-        switch (message.getAction()) {
-          case responseAction:
-            resolve();
-          default:
-            reject(new Error('Incorrect message sent back for a connection requirest'));
-        }
-      };
-
-      const onErrorCallback = (error: ErrorEvent) => {
-        this.worker.removeEventListener('message', onMessageCallback);
-        this.worker.removeEventListener('error', onErrorCallback);
-
-        reject(error.error);
-      };
-
-      this.worker.addEventListener('message', onMessageCallback);
-      this.worker.addEventListener('error', onErrorCallback);
+    // TODO: Do not erase current text on view, but raise an error and disable sending diff.
+    //       User have to reload page
+    this.textChangeListeners.forEach((callback: TextChangeCallback) => {
+      callback(text);
     });
+
+    return request.createSuccessResponse();
   }
 }

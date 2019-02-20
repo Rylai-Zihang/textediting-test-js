@@ -8,15 +8,26 @@ const TEXT_LOCK_FLAG_INDEX = 0;
 // sharedArray[1] - text length
 const TEXT_LENGTH_FLAG_INDEX = 1;
 
+const INT32_BYTE_LENGTH = 32 / 8;
+
 // TODO: Write functional tests
 export class SharedText {
 
+  public static createTextSharedBuffer(maxLength: number): SharedArrayBuffer {
+    return new SharedArrayBuffer((TEXT_SHIFT + maxLength) * INT32_BYTE_LENGTH);
+  }
+
   private sharedBufferInt32View: Int32Array;
   private lock: any;
+  private maxTextLength: number;
 
   constructor(sharedBuffer: SharedArrayBuffer) {
     this.sharedBufferInt32View = new Int32Array(sharedBuffer);
     this.lock = new SharingLock(this.sharedBufferInt32View, TEXT_LOCK_FLAG_INDEX);
+    this.maxTextLength = this.sharedBufferInt32View.length - TEXT_SHIFT;
+
+    // byte length of Int32Array should be a multiple of 4
+    this.maxTextLength += this.maxTextLength % 4;
   }
 
   public getText(): string {
@@ -68,7 +79,12 @@ export class SharedText {
   }
 
   private setTextUnsafe(text: string): void {
-    const length = this.toInt32(text.length);
+    let length = this.toInt32(text.length);
+    if (length > this.maxTextLength) {
+      console.warn(`Text length(${length}) is bigger then max allowed(${this.maxTextLength}),`
+          + ' ignoring a text tail');
+      length = this.maxTextLength;
+    }
 
     this.sharedBufferInt32View[TEXT_LENGTH_FLAG_INDEX] = length;
 

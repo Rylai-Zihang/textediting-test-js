@@ -10,4 +10,7 @@ TextSynchronizer.create(serverHost, serverPort, TEXT_MAX_LENGTH)
   .then((synchronizer: TextSynchronizer) => {
     const app = new Application(rootElementSelector, TEXT_MAX_LENGTH);
     app.initialize(synchronizer);
+  })
+  .catch((e: Error) => {
+    console.error(`Error while creating TextSynchronizer: ${e.message}`);
   });
