@@ -19,11 +19,7 @@ In case you have an error connected to MongoDB - just rerun the script.
 
 # Debug server application
 
-Run:
-
-mongod --dbpath /packages/server/data
-
-lerna run tsc
+Run: './scripts/prepare.sh'
 
 Open Project in VS Code(haven't tried other IDE) with following configuration:
 
@@ -39,7 +35,7 @@ Open Project in VS Code(haven't tried other IDE) with following configuration:
       "type": "node",
       "request": "launch",
       "name": "Launch Program",
-      "program": "${workspaceFolder}/packages/server/src/app.ts",
+      "program": "${workspaceFolder}/packages/server/src/index.ts",
       "outFiles": [
         "${workspaceFolder}/packages/server/dist/**/*.js"
       ]
