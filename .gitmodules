@@ -1,0 +1,3 @@
+[submodule "packages/client/libraries/atomics-wait-async"]
+	path = packages/client/libraries/atomics-wait-async
+	url = git@github.com:tc39/proposal-atomics-wait-async.git

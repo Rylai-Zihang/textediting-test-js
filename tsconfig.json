@@ -1,11 +1,13 @@
 {
     "compilerOptions": {
+        "experimentalDecorators": true,
         "module": "commonjs",
         "declaration": true,
         "noImplicitAny": true,
         "removeComments": true,
+        "strict": true,
         "moduleResolution": "node",
-        "target": "es2018",
+        "target": "es5",
         "sourceMap": true
     }
 }

@@ -1,11 +1,7 @@
 import { WebClient } from './WebClient';
 
 import * as http from 'http';
-
-// Disabling TSLint rule for this line is needed to not allow IDE
-// to change import statment automatically.
-// tslint:disable-next-line: import-name
-import WebSocket = require('ws');
+import * as WebSocket from 'ws';
 
 /**
  * Web Socket Server is only available on Node JS(back-end) side
@@ -13,7 +9,7 @@ import WebSocket = require('ws');
  * However native socket is used for WebClient, that's why 'any' is used in some
  * places to reduce type checking, these sockets are competible, so no problems on run time.
  */
-export class WebServer {
+export class WebSocketServer {
 
   private webSocketServer: WebSocket.Server;
   private connections: WebClient[] = [];

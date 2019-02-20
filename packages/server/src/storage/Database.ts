@@ -1,4 +1,4 @@
-import { DatabaseEntry } from 'communication';
+import { DatabaseEntry } from './DatabaseEntry';
 
 import {
   MongoClient,

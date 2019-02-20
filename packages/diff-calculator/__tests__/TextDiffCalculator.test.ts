@@ -43,31 +43,6 @@ describe('calculate', () => {
     calculator = createCalculatorNoFunctions();
   });
 
-  it('should throw an error if null is passed as "oldStr"', () => {
-    expect(() => {
-
-      calculator.calculate(null, 'new text');
-    }).toThrow();
-  });
-
-  it('should throw an error if null is passed as "newStr"', () => {
-    expect(() => {
-      calculator.calculate('current text', null);
-    }).toThrow();
-  });
-
-  it('should throw an error if undefined is passed as "oldStr"', () => {
-    expect(() => {
-      calculator.calculate(undefined, 'new text');
-    }).toThrow();
-  });
-
-  it('should throw an error if undefined is passed as "newStr"', () => {
-    expect(() => {
-      calculator.calculate('current text', undefined);
-    }).toThrow();
-  });
-
   it('should return TextDiff instance', () => {
     calculator = createCalculatorCreateOnly(
       (fileName: string, oldStr: string, newStr: string): string => {
@@ -123,30 +98,6 @@ describe('apply', () => {
 
   beforeEach(() => {
     calculator = createCalculatorNoFunctions();
-  });
-
-  it('should throw an error if null is passed as "text"', () => {
-    expect(() => {
-      calculator.apply(null, new TextDiff(''));
-    }).toThrow();
-  });
-
-  it('should throw an error if null is passed as "diff"', () => {
-    expect(() => {
-      calculator.apply('current text', null);
-    }).toThrow();
-  });
-
-  it('should throw an error if undefined is passed as "text"', () => {
-    expect(() => {
-      calculator.apply(undefined, new TextDiff(''));
-    }).toThrow();
-  });
-
-  it('should throw an error if undefined is passed as "diff"', () => {
-    expect(() => {
-      calculator.apply('current text', undefined);
-    }).toThrow();
   });
 
   it('should return string', () => {

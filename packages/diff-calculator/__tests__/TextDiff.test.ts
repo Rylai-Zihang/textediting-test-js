@@ -2,12 +2,6 @@ import { TextDiff } from '../src/TextDiff';
 
 describe('parse', () => {
 
-  it('should throw an error if null is passed', () => {
-    expect(() => {
-      TextDiff.parse(null);
-    }).toThrow();
-  });
-
   it('should throw an error if empty string is passed', () => {
     expect(() => {
       TextDiff.parse('');

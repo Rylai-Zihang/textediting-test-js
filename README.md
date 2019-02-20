@@ -28,7 +28,7 @@ lerna run tsc
 Open Project in VS Code(haven't tried other IDE) with following configuration:
 
 ```
-// launch.json
+// .vscode/launch.json
 {
   // Use IntelliSense to learn about possible attributes.
   // Hover to view descriptions of existing attributes.
@@ -40,12 +40,18 @@ Open Project in VS Code(haven't tried other IDE) with following configuration:
       "request": "launch",
       "name": "Launch Program",
       "program": "${workspaceFolder}/packages/server/src/app.ts",
-      // "preLaunchTask": "tsc",
       "outFiles": [
         "${workspaceFolder}/packages/server/dist/**/*.js"
       ]
     }
   ]
+}
+
+// .vscode/settings.json
+{
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true
+  }
 }
 ```
 

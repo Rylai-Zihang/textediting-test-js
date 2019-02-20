@@ -5,24 +5,31 @@
   "author": "Vladyslav Rudkivskyi <v.rudkovskiy@gmail.com>",
   "homepage": "",
   "license": "ISC",
-  "main": "dist/app.js",
   "scripts": {
     "tslint": "tslint --fix --project ./tsconfig.json",
     "test": "echo \"Error: run tests from root\" && exit 1",
-    "build": "webpack --watch --display-error-details",
-    "clean-build": "rm -f ./dist/app.js && npm run build"
+    "build": "bash ./scripts/build.sh",
+    "clean-build": "rm -rf ./dist && rm -rf ./built && npm run build"
   },
   "dependencies": {
-    "diff-calculator": "0.0.0",
     "communication": "0.0.0",
+    "diff-calculator": "0.0.0",
+    "vue": "^2.6.6",
+    "vue-class-component": "^6.3.2",
+    "vue-property-decorator": "^7.3.0",
+    "vuex": "^3.1.0"
+  },
+  "devDependencies": {
+    "css-loader": "^2.1.0",
     "ts-loader": "^5.3.3",
     "tsconfig-paths-webpack-plugin": "^3.2.0",
+    "tslint": "^5.12.1",
+    "tslint-config-airbnb": "^5.11.1",
+    "vue-loader": "^15.6.2",
+    "vue-style-loader": "^4.1.2",
+    "vue-template-compiler": "^2.6.6",
     "webpack": "^4.29.3",
     "webpack-cli": "^3.2.3",
     "webpack-livereload-plugin": "^2.2.0"
-  },
-  "devDependencies": {
-    "tslint": "^5.12.1",
-    "tslint-config-airbnb": "^5.11.1"
   }
 }
