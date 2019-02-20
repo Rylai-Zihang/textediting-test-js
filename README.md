@@ -54,11 +54,9 @@ Open Project in VS Code(haven't tried other IDE) with following configuration:
 
 # Known issues
 1. Application was not intensively tested because of lack of time, however should work properly enough as for a test task.
-2. Synchronization of huge text(> 60000 symbols) fails.
-3. Critical parts(WebSocket and WebWorker communication layers) should be refactored.
-4. Error handling does not cover all situations.
-5. Haven't tested components' deploy and production build.
-6. Application config should be extracted to a config file and/or encironment variables.
-7. Project configuration should be adjusted:
+2. Error handling does not cover all situations.
+3. Haven't tested components' deploy and production build.
+4. Application config should be extracted to a config file and/or encironment variables.
+5. Project configuration should be adjusted:
  - Live reload was broken after last project structure changes
  - Workarounds in debugging process should be fixed.
